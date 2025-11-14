@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="18dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/card_dark">
+
+    <EditText
+        android:id="@+id/etTitle"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="@string/hint_title"
+        android:textColor="@color/text_white"
+        android:textSize="16sp"
+        android:backgroundTint="@color/card_dark"/>
+
+    <View android:layout_width="match_parent" android:layout_height="10dp"/>
+
+    <EditText
+        android:id="@+id/etContent"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:hint="@string/hint_content"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:textColor="@color/text_white"
+        android:backgroundTint="@color/card_dark"/>
+</LinearLayout>

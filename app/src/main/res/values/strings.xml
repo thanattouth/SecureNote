@@ -1,3 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SecureNote</string>
+    <string name="app_name">Secure Notes</string>
+    <string name="add_note">เพิ่มบันทึก</string>
+    <string name="save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="hint_title">หัวข้อ</string>
+    <string name="hint_content">พิมพ์โน้ตที่นี่...</string>
+    <string name="no_notes">ยังไม่มีบันทึก</string>
+
+    <!-- dialog_pin -->
+    <string name="icon_desc">icon</string>
+    <string name="pin_title">ใส่รหัส PIN</string>
+    <string name="pin_sub">กรุณาใส่รหัส 4 หลักเพื่อเข้าใช้งาน</string>
+    <string name="btn_cancel">ยกเลิก</string>
+    <string name="btn_ok">ตกลง</string>
+
 </resources>

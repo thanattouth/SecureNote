@@ -5,9 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_bg">
+    android:background="@color/bg_cream">
 
-    <!-- Top header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="88dp"
@@ -16,18 +15,16 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:gravity="bottom">
-
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textColor="@color/text_white"
+            android:textColor="@color/text_dark"
             android:textSize="28sp"
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- RecyclerView (แสดงรายการโน้ต) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotes"
         android:layout_width="match_parent"
@@ -38,7 +35,6 @@
         android:clipToPadding="false"
         android:scrollbars="vertical"/>
 
-    <!-- ข้อความเมื่อยังไม่มีโน้ต -->
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="wrap_content"
@@ -48,14 +44,13 @@
         android:layout_gravity="center"
         android:visibility="gone"/>
 
-    <!-- ปุ่มเพิ่ม (FAB) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="20dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/ios_accent"
+        app:backgroundTint="@color/ios_blue"
         android:contentDescription="@string/add_note"
         app:fabSize="normal"
         android:tint="@android:color/white"
