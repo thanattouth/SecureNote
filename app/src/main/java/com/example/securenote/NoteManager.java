@@ -59,16 +59,24 @@ public class NoteManager {
         public String content;
         public long createdAt;
         public long updatedAt;
-        public Note(String id, String title, String content, long createdAt, long updatedAt) {
-            this.id = id; this.title = title; this.content = content;
-            this.createdAt = createdAt; this.updatedAt = updatedAt;
+        public boolean pinned;   // ✅ เพิ่ม
+
+        public Note(String id, String title, String content,
+                    long createdAt, long updatedAt, boolean pinned) {
+            this.id = id;
+            this.title = title;
+            this.content = content;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+            this.pinned = pinned;
         }
     }
 
     @NonNull
     public Note addNote(@NonNull String title, @NonNull String content) {
-        String id = UUID.randomUUID().toString();
+        JSONArray arr = getArray();
         long now = System.currentTimeMillis();
+        String id = UUID.randomUUID().toString();
         JSONObject o = new JSONObject();
         try {
             o.put("id", id);
@@ -76,11 +84,11 @@ public class NoteManager {
             o.put("content", content);
             o.put("createdAt", now);
             o.put("updatedAt", now);
-            JSONArray arr = getArray();
+            o.put("pinned", false);           // ✅ โน้ตใหม่ยังไม่ถูกปักหมุด
             arr.put(o);
             saveArray(arr);
         } catch (JSONException e) { /* ignore */ }
-        return new Note(id, title, content, now, now);
+        return new Note(id, title, content, now, now, false);
     }
 
     public boolean updateNote(@NonNull String id, @NonNull String title, @NonNull String content) {
@@ -92,6 +100,43 @@ public class NoteManager {
                 if (id.equals(o.optString("id"))) {
                     o.put("title", title);
                     o.put("content", content);
+                    o.put("updatedAt", System.currentTimeMillis());
+                    arr.put(i, o);
+                    changed = true;
+                    break;
+                }
+            } catch (JSONException e) { /* ignore */ }
+        }
+        if (changed) saveArray(arr);
+        return changed;
+    }
+
+    public void addNote(String id, String title, String content) {
+        JSONArray arr = getArray();
+        JSONObject o = new JSONObject();
+        try {
+            o.put("id", id);
+            o.put("title", title);
+            o.put("content", content);
+            o.put("createdAt", System.currentTimeMillis());
+            o.put("updatedAt", System.currentTimeMillis());
+
+            // เพิ่มลงใน Array
+            arr.put(o);
+            saveArray(arr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean setPinned(@NonNull String id, boolean pinned) {
+        JSONArray arr = getArray();
+        boolean changed = false;
+        for (int i = 0; i < arr.length(); i++) {
+            try {
+                JSONObject o = arr.getJSONObject(i);
+                if (id.equals(o.optString("id"))) {
+                    o.put("pinned", pinned);
                     o.put("updatedAt", System.currentTimeMillis());
                     arr.put(i, o);
                     changed = true;
@@ -125,12 +170,14 @@ public class NoteManager {
         for (int i=0;i<arr.length();i++) {
             try {
                 JSONObject o = arr.getJSONObject(i);
+                boolean pinned = o.optBoolean("pinned", false);  // ✅ เผื่อโน้ตเก่าไม่มีฟิลด์นี้
                 out.add(new Note(
                         o.optString("id"),
                         o.optString("title"),
                         o.optString("content"),
                         o.optLong("createdAt",0),
-                        o.optLong("updatedAt", o.optLong("createdAt",0))
+                        o.optLong("updatedAt", o.optLong("createdAt",0)),
+                        pinned
                 ));
             } catch (JSONException e) {}
         }

@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="320dp"
+    android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    card_view:cardCornerRadius="20dp"
-    card_view:cardElevation="10dp"
-    android:padding="24dp"
-    android:background="@color/white">
+    card_view:cardCornerRadius="24dp"
+    card_view:cardElevation="8dp"
+    card_view:cardBackgroundColor="@color/bg_cream">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingTop="32dp"
+        android:paddingBottom="24dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
         android:gravity="center_horizontal">
 
         <ImageView
             android:id="@+id/iconLock"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_lock"
             android:contentDescription="@string/icon_desc"
-            app:tint="@color/brand_red"
-            android:layout_marginBottom="10dp" />
+            app:tint="@color/text_dark"
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pin_title"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:textColor="@color/brand_brown" />
+            android:textColor="@color/text_dark" />
 
         <TextView
             android:id="@+id/tvSub"
@@ -43,24 +47,22 @@
             android:text="@string/pin_sub"
             android:textSize="14sp"
             android:gravity="center"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/brand_muted" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text_gray" />
 
-        <!-- ช่องใส่ PIN -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="18dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
 
-            <!-- ใส่ hint และปิด autofill สำหรับช่องแยก -->
             <EditText
                 android:id="@+id/pin1"
                 style="@style/PinEdit"
-                android:background="@drawable/pin_box_bg"
-                android:hint="•"
+                android:background="@drawable/bg_pin_field"
+                android:inputType="numberPassword"
                 android:importantForAccessibility="yes"
                 android:autofillHints="no" />
 
@@ -69,8 +71,8 @@
             <EditText
                 android:id="@+id/pin2"
                 style="@style/PinEdit"
-                android:background="@drawable/pin_box_bg"
-                android:hint="•"
+                android:background="@drawable/bg_pin_field"
+                android:inputType="numberPassword"
                 android:importantForAccessibility="yes"
                 android:autofillHints="no" />
 
@@ -79,8 +81,8 @@
             <EditText
                 android:id="@+id/pin3"
                 style="@style/PinEdit"
-                android:background="@drawable/pin_box_bg"
-                android:hint="•"
+                android:background="@drawable/bg_pin_field"
+                android:inputType="numberPassword"
                 android:importantForAccessibility="yes"
                 android:autofillHints="no" />
 
@@ -89,41 +91,42 @@
             <EditText
                 android:id="@+id/pin4"
                 style="@style/PinEdit"
-                android:background="@drawable/pin_box_bg"
-                android:hint="•"
+                android:background="@drawable/bg_pin_field"
+                android:inputType="numberPassword"
                 android:importantForAccessibility="yes"
                 android:autofillHints="no" />
         </LinearLayout>
 
-        <!-- ปุ่มอยู่ตรงกลาง ปรับขนาด touch target ให้ >=48dp -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center_horizontal">
+            android:layout_marginTop="8dp">
 
             <Button
                 android:id="@+id/btnCancel"
-                android:layout_width="120dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/btn_outline"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:text="@string/btn_cancel"
-                android:textColor="@color/brand_brown"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp" />
+                android:textColor="@color/text_gray"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"/>
 
-            <Button
+            <View android:layout_width="16dp" android:layout_height="0dp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnOk"
-                android:layout_width="120dp"
+                android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:background="@drawable/btn_filled"
+                android:layout_weight="1"
+                android:background="@drawable/bg_round_button_filled"
                 android:text="@string/btn_ok"
                 android:textColor="@color/white"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -11,8 +11,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Securenote">
+        android:theme="@style/Theme.SecureNote">
 
+        <!-- หน้าแสดงโน้ตแบบเต็มจอ -->
+        <activity
+            android:name=".NoteDetailActivity"
+            android:exported="false" />
+
+        <!-- หน้าแรกของแอป -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -23,6 +29,7 @@
             </intent-filter>
 
         </activity>
+
     </application>
 
 </manifest>

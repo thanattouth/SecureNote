@@ -14,10 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import java.util.concurrent.Executor;
+
 public class DialogHelper {
 
     public interface PinCallback {
-        void onPinEntered(String pin);
+        void onAuthSuccess(String pin); // เปลี่ยนชื่อให้ชัดเจนว่า Auth ผ่านแล้ว
         void onCancelled();
     }
 
@@ -25,7 +32,8 @@ public class DialogHelper {
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_pin, null);
         builder.setView(view);
-        builder.setCancelable(false);
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
 
         final EditText p1 = view.findViewById(R.id.pin1);
         final EditText p2 = view.findViewById(R.id.pin2);
@@ -37,8 +45,6 @@ public class DialogHelper {
         // ensure each field max length = 1 (use InputFilter)
         InputFilter[] oneChar = new InputFilter[] { new InputFilter.LengthFilter(1) };
         p1.setFilters(oneChar); p2.setFilters(oneChar); p3.setFilters(oneChar); p4.setFilters(oneChar);
-
-        final AlertDialog dialog = builder.create();
 
         TextWatcher tw = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int st, int b, int c) {}
@@ -66,36 +72,62 @@ public class DialogHelper {
         // show dialog first then request keyboard
         dialog.show();
 
-        // after show, set keyboard to first field if we have Activity window
-        p1.post(() -> {
-            p1.requestFocus();
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            } else {
-                // fallback: try to show keyboard via Activity's window if context is Activity
-                if (ctx instanceof Activity) {
-                    ((Activity) ctx).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                }
-            }
-        });
-
         btnCancel.setOnClickListener(v -> {
             dialog.dismiss();
             if (callback != null) callback.onCancelled();
         });
 
         btnOk.setOnClickListener(v -> {
-            String pin = p1.getText().toString()
-                    + p2.getText().toString()
-                    + p3.getText().toString()
-                    + p4.getText().toString();
+            String pin = p1.getText().toString() + p2.getText().toString() + p3.getText().toString() + p4.getText().toString();
             if (pin.length() < 4) {
-                Toast.makeText(ctx, "กรุณากรอก 4 หลัก", Toast.LENGTH_SHORT).show();
+                // [Modified] ใช้ ctx.getString
+                Toast.makeText(ctx, ctx.getString(R.string.msg_pin_length_error), Toast.LENGTH_SHORT).show();
                 return;
             }
+
             dialog.dismiss();
-            if (callback != null) callback.onPinEntered(pin);
+
+            if (ctx instanceof FragmentActivity) {
+                authenticateBiometric((FragmentActivity) ctx, pin, callback);
+            } else {
+                callback.onAuthSuccess(pin);
+            }
         });
+    }
+
+    private static void authenticateBiometric(FragmentActivity activity, String pin, PinCallback callback) {
+        Executor executor = ContextCompat.getMainExecutor(activity);
+
+        BiometricPrompt biometricPrompt = new BiometricPrompt(activity, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                // [Modified] ใช้ getString with format arguments สำหรับ error message
+                String msg = activity.getString(R.string.msg_auth_error_prefix, errString);
+                Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
+                callback.onCancelled();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                callback.onAuthSuccess(pin);
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                // [Modified]
+                Toast.makeText(activity, activity.getString(R.string.msg_auth_failed), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(activity.getString(R.string.bio_title))
+                .setSubtitle(activity.getString(R.string.bio_subtitle))
+                .setNegativeButtonText(activity.getString(R.string.bio_negative))
+                .build();
+
+        biometricPrompt.authenticate(promptInfo);
     }
 }

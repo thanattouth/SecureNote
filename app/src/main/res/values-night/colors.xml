@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ใช้ชื่อสีเดียวกับ res/values/colors.xml แต่ให้โทนมืด -->
+    <color name="dark_bg">#000000</color>
+    <color name="card_dark">#1E1E1E</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_gray">#A3A3A8</color>
+
+    <color name="ios_accent">#FFCC00</color>
+
+    <!-- พื้นหลังหลักของแอป (กลางวันใช้ bg_cream, กลางคืนให้เป็นดำ) -->
+    <color name="dialog_bg">#1E1E1E</color> <!-- เทาเข้มแบบ iOS dark -->
+    <color name="bg_cream">#000000</color>
+    <color name="bg_dark">#000000</color>
+
+    <!-- ตัวหนังสือหลักในพื้นหลังมืด -->
+    <color name="text_dark">#FFFFFF</color>
+    <color name="text_light">#FFFFFF</color>
+
+    <!-- สีอื่น ๆ จะให้เหมือนเดิมก็ได้ -->
+    <color name="brand_red">#E45555</color>
+    <color name="brand_brown">#8A5A44</color>
+    <color name="brand_muted">#A28E7A</color>
+    <color name="ios_blue">#0A84FF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="icon_on_white">#000000</color>   <!-- ไอคอนบนปุ่มพื้นขาว -->
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_cream">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@android:drawable/ic_media_previous"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/desc_back"
+                app:tint="@color/text_dark"
+                xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+            <ImageButton
+                android:id="@+id/btnSave"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@android:drawable/ic_menu_save"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/desc_save"
+                app:tint="@color/ios_accent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"/>
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/etDetailTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_title"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:background="@android:color/transparent"
+            android:textColor="@color/text_dark"
+            android:textColorHint="@color/text_gray"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/etDetailContent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="12dp"
+            android:hint="@string/hint_content"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:overScrollMode="ifContentScrolls"
+            android:scrollbars="vertical"
+            android:textSize="16sp"
+            android:textColor="@color/text_dark"
+            android:textColorHint="@color/text_gray"
+            android:background="@android:color/transparent" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
