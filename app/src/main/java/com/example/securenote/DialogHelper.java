@@ -125,7 +125,7 @@ public class DialogHelper {
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(activity.getString(R.string.bio_title))
                 .setSubtitle(activity.getString(R.string.bio_subtitle))
-                .setNegativeButtonText(activity.getString(R.string.bio_negative))
+                .setNegativeButtonText(activity.getString(R.string.cancel))
                 .build();
 
         biometricPrompt.authenticate(promptInfo);

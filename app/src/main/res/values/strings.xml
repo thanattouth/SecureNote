@@ -2,23 +2,22 @@
 <resources>
     <string name="app_name">SecureNote</string>
 
-    <string name="btn_ok">ตกลง</string>
-    <string name="btn_cancel">ยกเลิก</string>
-    <string name="btn_delete">ลบ</string>
-    <string name="btn_save">บันทึก</string>
+    <string name="btn_ok">accept</string>
+    <string name="btn_delete">delete</string>
+    <string name="btn_save">save</string>
+    <string name="cancel">Cancel</string>
 
-    <string name="msg_login_success">เข้าสู่ระบบสำเร็จ</string>
-    <string name="msg_save_success">บันทึกเรียบร้อย</string>
-    <string name="msg_pin_length_error">กรุณากรอก 4 หลัก</string>
+    <string name="msg_login_success">login successfully</string>
+    <string name="msg_save_success">save success</string>
+    <string name="msg_pin_length_error">please enter 4 number</string>
     <string name="msg_auth_error_prefix">Authentication error: %1$s</string>
-    <string name="msg_auth_failed">ไม่สามารถระบุตัวตนได้ กรุณาลองใหม่</string>
+    <string name="msg_auth_failed">authentication failed</string>
 
-    <string name="bio_title">ยืนยันตัวตนเพื่อถอดรหัส</string>
-    <string name="bio_subtitle">ใช้ Face ID หรือลายนิ้วมือเพื่อเข้าถึงข้อมูล</string>
-    <string name="bio_negative">ยกเลิก</string>
+    <string name="bio_title">Verify your identity to decrypt</string>
+    <string name="bio_subtitle">Use fingerprint sensor to decrypt</string>
 
-    <string name="dialog_manage_title">จัดการโน้ต</string>
-    <string name="dialog_confirm_delete">ยืนยันการลบ?</string>
+    <string name="dialog_manage_title">Note management</string>
+    <string name="dialog_confirm_delete">confirm delete</string>
 
     <string name="pin_title">Enter PIN</string>
     <string name="pin_sub">Enter your 4-digit passcode</string>
@@ -27,14 +26,14 @@
     <string name="add_note">Add Note</string>
     <string name="no_notes">No notes available</string>
 
-    <string name="hint_search">ค้นหา</string>
-    <string name="hint_title">หัวข้อ</string>
-    <string name="hint_content">พิมพ์โน้ตที่นี่...</string>
+    <string name="hint_search">Search</string>
+    <string name="hint_title">Topic</string>
+    <string name="hint_content">Enter your note here …</string>
 
-    <string name="desc_back">ย้อนกลับ</string>
-    <string name="desc_save">บันทึก</string>
+    <string name="desc_back">Back</string>
+    <string name="desc_save">Save</string>
 
-    <string name="preview_title">หัวข้อโน้ต</string>
-    <string name="preview_excerpt">ตัวอย่างเนื้อหาโน้ต...</string>
+    <string name="preview_title">Topic</string>
+    <string name="preview_excerpt">Note example</string>
 
 </resources>

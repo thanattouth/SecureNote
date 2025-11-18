@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                                 manager.deleteNote(n.id);
                                 refreshList();
                             })
-                            .setNegativeButton(getString(R.string.btn_cancel), null)
+                            .setNegativeButton(getString(R.string.cancel), null)
                             .show();
                 })
                 .show();
