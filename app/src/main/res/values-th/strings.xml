@@ -32,6 +32,8 @@
 
     <string name="desc_back">กลับ</string>
     <string name="desc_save">บันทึก</string>
+    <string name="desc_pin">ปักหมุดบันทึก</string>
+    <string name="desc_upload_image">อัปโหลดรูปภาพ</string>
 
     <string name="preview_title">หัวข้อ</string>
     <string name="preview_excerpt">บันทึกตัวอย่าง</string>

@@ -20,6 +20,14 @@ public class NoteManager {
     private final SharedPreferences prefs;
     private static NoteManager sInstance;
 
+    // New interface and classes for handling headers
+    public interface ListItem {}
+
+    public static class Header implements ListItem {
+        public final String title;
+        public Header(String title) { this.title = title; }
+    }
+
     private NoteManager(@NonNull Context ctx) {
         prefs = ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         ensureArray();
@@ -35,7 +43,7 @@ public class NoteManager {
     }
 
     private void ensureArray() {
-        if (!prefs.contains(KEY_NOTES)) prefs.edit().putString(KEY_NOTES, new JSONArray().toString()).apply();
+        if (!prefs.contains(KEY_NOTES)) prefs.edit().putString(KEY_NOTES, new JSONArray().toString()).commit();
     }
 
     private JSONArray getArray() {
@@ -44,22 +52,22 @@ public class NoteManager {
         try { return new JSONArray(raw); }
         catch (JSONException e) {
             JSONArray arr = new JSONArray();
-            prefs.edit().putString(KEY_NOTES, arr.toString()).apply();
+            prefs.edit().putString(KEY_NOTES, arr.toString()).commit();
             return arr;
         }
     }
 
     private void saveArray(JSONArray arr) {
-        prefs.edit().putString(KEY_NOTES, arr.toString()).apply();
+        prefs.edit().putString(KEY_NOTES, arr.toString()).commit();
     }
 
-    public static class Note {
+    public static class Note implements ListItem {
         public final String id;
         public String title;
         public String content;
         public long createdAt;
         public long updatedAt;
-        public boolean pinned;   // ✅ เพิ่ม
+        public boolean pinned;
 
         public Note(String id, String title, String content,
                     long createdAt, long updatedAt, boolean pinned) {
@@ -84,7 +92,7 @@ public class NoteManager {
             o.put("content", content);
             o.put("createdAt", now);
             o.put("updatedAt", now);
-            o.put("pinned", false);           // ✅ โน้ตใหม่ยังไม่ถูกปักหมุด
+            o.put("pinned", false);
             arr.put(o);
             saveArray(arr);
         } catch (JSONException e) { /* ignore */ }
@@ -121,7 +129,6 @@ public class NoteManager {
             o.put("createdAt", System.currentTimeMillis());
             o.put("updatedAt", System.currentTimeMillis());
 
-            // เพิ่มลงใน Array
             arr.put(o);
             saveArray(arr);
         } catch (JSONException e) {
@@ -164,14 +171,14 @@ public class NoteManager {
     }
 
     @NonNull
-    public List<Note> getAll() {
+    public List<ListItem> getAll() {
         JSONArray arr = getArray();
-        List<Note> out = new ArrayList<>();
+        List<Note> notes = new ArrayList<>();
         for (int i=0;i<arr.length();i++) {
             try {
                 JSONObject o = arr.getJSONObject(i);
-                boolean pinned = o.optBoolean("pinned", false);  // ✅ เผื่อโน้ตเก่าไม่มีฟิลด์นี้
-                out.add(new Note(
+                boolean pinned = o.optBoolean("pinned", false);
+                notes.add(new Note(
                         o.optString("id"),
                         o.optString("title"),
                         o.optString("content"),
@@ -181,6 +188,30 @@ public class NoteManager {
                 ));
             } catch (JSONException e) {}
         }
-        return out;
+
+        notes.sort((n1, n2) -> {
+            if (n1.pinned != n2.pinned) {
+                return n1.pinned ? -1 : 1;
+            }
+            return Long.compare(n2.updatedAt, n1.updatedAt);
+        });
+
+        List<ListItem> listItems = new ArrayList<>();
+        boolean hasPinnedHeader = false;
+        boolean hasRecentHeader = false;
+
+        for (Note note : notes) {
+            if (note.pinned && !hasPinnedHeader) {
+                listItems.add(new Header("Pinned"));
+                hasPinnedHeader = true;
+            }
+            if (!note.pinned && !hasRecentHeader) {
+                listItems.add(new Header("Recent"));
+                hasRecentHeader = true;
+            }
+            listItems.add(note);
+        }
+
+        return listItems;
     }
 }
