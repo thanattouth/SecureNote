@@ -33,6 +33,16 @@
         android:maxLines="2"
         android:ellipsize="end" />
 
+    <TextView
+        android:id="@+id/tvNoteDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        tools:text="15/05/2024" />
+
     <!-- เส้นแบ่งบรรทัดแบบ iOS -->
     <View
         android:layout_width="match_parent"
