@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SecureNote</string>
+
+    <string name="btn_ok">ยอมรับ</string>
+    <string name="btn_delete">ลบ</string>
+    <string name="btn_save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
+
+    <string name="msg_login_success">เข้าสู่ระบบสำเร็จ</string>
+    <string name="msg_save_success">บันทึกความสำเร็จ</string>
+    <string name="msg_pin_length_error">กรุณาใส่เลข 4 หลัก</string>
+    <string name="msg_auth_error_prefix">ข้อผิดพลาดการตรวจสอบสิทธิ์: %1$s</string>
+    <string name="msg_auth_failed">การตรวจสอบสิทธิ์ล้มเหลว</string>
+
+    <string name="bio_title">ยืนยันตัวตนของคุณเพื่อถอดรหัส</string>
+    <string name="bio_subtitle">ใช้เซ็นเซอร์ลายนิ้วมือเพื่อถอดรหัส</string>
+
+    <string name="dialog_manage_title">การจัดการบันทึก</string>
+    <string name="dialog_confirm_delete">ยืนยันการลบ</string>
+
+    <string name="pin_title">กรอกรหัส PIN</string>
+    <string name="pin_sub">ป้อนรหัสผ่าน 4 หลักของคุณ</string>
+    <string name="icon_desc">Lock Icon</string>
+
+    <string name="add_note">เพิ่มบันทึก</string>
+    <string name="no_notes">ไม่มีบันทึก</string>
+
+    <string name="hint_search">ค้นหา</string>
+    <string name="hint_title">หัวข้อ</string>
+    <string name="hint_content">เขียนบันทึกของคุณที่นี่…</string>
+
+    <string name="desc_back">กลับ</string>
+    <string name="desc_save">บันทึก</string>
+
+    <string name="preview_title">หัวข้อ</string>
+    <string name="preview_excerpt">บันทึกตัวอย่าง</string>
+
+</resources>
