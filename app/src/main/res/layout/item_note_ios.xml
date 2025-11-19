@@ -5,10 +5,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:paddingStart="@dimen/item_padding_h"
+    android:paddingEnd="@dimen/item_padding_h"
+    android:paddingTop="@dimen/item_padding_v"
+    android:paddingBottom="@dimen/item_padding_v"
     android:background="@color/bg_cream">
 
     <TextView
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         tools:text="@string/preview_title"
         android:textColor="@color/text_dark"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_title"
         android:textStyle="bold"
         android:maxLines="1"
         android:ellipsize="end" />
@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         tools:text="@string/preview_excerpt"
         android:textColor="@color/text_gray"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
+        android:textSize="@dimen/text_excerpt"
+        android:layout_marginTop="@dimen/padding_sm"
         android:maxLines="2"
         android:ellipsize="end" />
 
@@ -38,16 +38,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/padding_md"
         android:textColor="@color/text_gray"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_date"
         tools:text="15/05/2024" />
 
-    <!-- เส้นแบ่งบรรทัดแบบ iOS -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="@dimen/item_divider_height"
+        android:layout_marginTop="@dimen/item_margin_top"
         android:background="#22000000" />
 
 </LinearLayout>

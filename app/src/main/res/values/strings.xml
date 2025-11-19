@@ -21,6 +21,11 @@
 
     <string name="pin_title">Enter PIN</string>
     <string name="pin_sub">Enter your 4-digit passcode</string>
+
+    <!-- descriptions used by activity_note_detail -->
+    <string name="desc_upload_image">Upload image</string>
+    <string name="desc_pin">Pin</string>
+
     <string name="icon_desc">Lock Icon</string>
 
     <string name="add_note">Add Note</string>
@@ -36,4 +41,9 @@
     <string name="preview_title">Topic</string>
     <string name="preview_excerpt">Note example</string>
 
+    <!-- Accessibility: labels for PIN fields -->
+    <string name="pin_digit_desc_1">PIN digit 1</string>
+    <string name="pin_digit_desc_2">PIN digit 2</string>
+    <string name="pin_digit_desc_3">PIN digit 3</string>
+    <string name="pin_digit_desc_4">PIN digit 4</string>
 </resources>
