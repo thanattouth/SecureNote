@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String currentSessionPin = null;
 
-    // [NEW] ตัวแปรเก็บโน้ตทั้งหมดไว้กรอง
-    private List<NoteManager.Note> allNotes = new ArrayList<>();
+    // [MODIFIED] The list now holds both Notes and Headers
+    private List<NoteManager.ListItem> allNotes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,64 +144,73 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra(NoteDetailActivity.EXTRA_ID, n.id);
         i.putExtra(NoteDetailActivity.EXTRA_TITLE, n.title);
         i.putExtra(NoteDetailActivity.EXTRA_CONTENT, decryptedContent != null ? decryptedContent : n.content);
+        i.putExtra(NoteDetailActivity.EXTRA_PINNED, n.pinned);
         i.putExtra("USER_PIN", currentSessionPin);
         startActivity(i);
     }
 
-    // [Modified] โหลดข้อมูลแล้วเก็บเข้า allNotes ด้วย
     private void refreshList() {
-        allNotes = manager.getAll(); // เก็บตัวแม่
+        allNotes = manager.getAll(); // This now returns List<ListItem>
 
-        // ถ้ามีคำค้นหาค้างอยู่ ให้กรองตามคำค้นหานั้น (เผื่อกลับมาจากหน้าอื่นแล้วยังพิมพ์ค้างไว้)
         if (etSearch != null && etSearch.getText().length() > 0) {
             filterNotes(etSearch.getText().toString());
         } else {
-            // ถ้าไม่มีคำค้น ก็โชว์ทั้งหมด
             adapter.setItems(allNotes);
         }
 
         updateEmptyView();
     }
 
-    // [NEW] ฟังก์ชันกรองโน้ต
+    // [MODIFIED] This method now handles a list of ListItems
     private void filterNotes(String query) {
         if (query.isEmpty()) {
             adapter.setItems(allNotes);
         } else {
-            List<NoteManager.Note> filtered = new ArrayList<>();
+            List<NoteManager.ListItem> filtered = new ArrayList<>();
             String lowerQuery = query.toLowerCase();
-            for (NoteManager.Note n : allNotes) {
-                // ค้นหาจาก Title เท่านั้น (เพราะ Content เข้ารหัสอยู่)
-                if (n.title.toLowerCase().contains(lowerQuery)) {
-                    filtered.add(n);
+            for (NoteManager.ListItem item : allNotes) {
+                // Only filter the Note items, ignore headers
+                if (item instanceof NoteManager.Note) {
+                    NoteManager.Note n = (NoteManager.Note) item;
+                    if (n.title.toLowerCase().contains(lowerQuery)) {
+                        filtered.add(n);
+                    }
                 }
             }
             adapter.setItems(filtered);
         }
-        // อัปเดต empty view ถ้าค้นแล้วไม่เจอ
-        // updateEmptyView(); // (optional)
+        updateEmptyView();
     }
 
     private void updateEmptyView() {
         if (tvEmpty != null) {
-            // เช็คจาก adapter ว่าตอนนี้โชว์กี่ตัว
             tvEmpty.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
         }
     }
 
     private void showEditDeleteDialog(NoteManager.Note n) {
-        // [Modified] ใช้ getString ทั้งหมด
+        String pinAction = n.pinned ? "Unpin" : "Pin";
+        CharSequence[] items = { pinAction, "Delete" };
+
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.dialog_manage_title))
-                .setItems(new CharSequence[]{getString(R.string.btn_delete)}, (dialog, which) -> {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setMessage(getString(R.string.dialog_confirm_delete))
-                            .setPositiveButton(getString(R.string.btn_delete), (d, w) -> {
-                                manager.deleteNote(n.id);
-                                refreshList();
-                            })
-                            .setNegativeButton(getString(R.string.cancel), null)
-                            .show();
+                .setTitle("Manage Note")
+                .setItems(items, (dialog, which) -> {
+                    if (which == 0) { // Pin/Unpin
+                        boolean newPinState = !n.pinned;
+                        manager.setPinned(n.id, newPinState);
+                        refreshList();
+                        String message = newPinState ? "Note pinned" : "Note unpinned";
+                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                    } else if (which == 1) { // Delete
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setMessage("Are you sure you want to delete this note?")
+                                .setPositiveButton("Delete", (d, w) -> {
+                                    manager.deleteNote(n.id);
+                                    refreshList();
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                    }
                 })
                 .show();
     }
