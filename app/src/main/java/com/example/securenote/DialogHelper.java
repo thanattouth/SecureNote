@@ -62,7 +62,7 @@ public class DialogHelper {
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(activity.getString(R.string.bio_title))
                 .setSubtitle(activity.getString(R.string.bio_subtitle))
-                .setNegativeButtonText(activity.getString(R.string.cancel))
+                .setNegativeButtonText(activity.getString(R.string.btn_cancel))
                 .build();
 
         // ส่ง Cipher เข้าไปยืนยัน

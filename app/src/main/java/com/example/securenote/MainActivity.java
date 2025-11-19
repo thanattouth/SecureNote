@@ -3,7 +3,7 @@ package com.example.securenote;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher; // Import สำคัญ
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.crypto.Cipher;
 
@@ -30,10 +29,12 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvNotes;
     private ImageButton btnAdd;
     private EditText etSearch;
+    private TextView tvEmpty; // เพิ่ม reference (ถ้ามีใน xml)
 
     // เก็บรายการทั้งหมดไว้เป็น Master Data เพื่อใช้กรอง
     private List<NoteManager.ListItem> allNotes = new ArrayList<>();
 
+    // ฟังก์ชันเช็ค Root อย่างง่าย
     private boolean isDeviceRooted() {
         String[] paths = {
                 "/system/app/Superuser.apk", "/sbin/su", "/system/bin/su",
@@ -48,23 +49,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        if (isDeviceRooted()) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Security Risk")
-                    .setMessage("อุปกรณ์นี้ผ่านการ Root ไม่ปลอดภัยในการใช้งาน")
-                    .setCancelable(false)
-                    .setPositiveButton("ปิดแอป", (d, w) -> finishAffinity())
-                    .show();
-            return; // หยุดทำงาน
-        }
-
         super.onCreate(savedInstanceState);
 
-        // [SECURITY] 1. Anti-Screenshot
+        // 1. Security Check: Anti-Screenshot
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        // [SECURITY] 2. Init Hardware Key
+        // 2. Security Check: Root Detection
+        if (isDeviceRooted()) {
+            // [FIXED] ใช้ getString แทนข้อความ Hardcode
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.title_security_risk))
+                    .setMessage(getString(R.string.msg_device_rooted))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.btn_close_app), (d, w) -> finishAffinity())
+                    .show();
+            return; // หยุดการทำงาน
+        }
+
+        // 3. Init Hardware Key
         KeyStoreManager.generateSecretKey();
 
         setContentView(R.layout.activity_main_ios);
@@ -72,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
         NoteManager.init(this);
         manager = NoteManager.get();
 
+        // UI Bindings
         rvNotes = findViewById(R.id.rvNotes);
         btnAdd = findViewById(R.id.btnAdd);
         etSearch = findViewById(R.id.etSearch);
+        // tvEmpty = findViewById(R.id.tvEmpty); // ถ้ามี
 
         lockUI();
 
@@ -92,19 +96,17 @@ public class MainActivity extends AppCompatActivity {
         });
         rvNotes.setAdapter(adapter);
 
-        // [FIXED] เพิ่ม Logic การค้นหา
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filterNotes(s.toString());
-            }
-        });
+        // Search Logic
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(Editable s) {
+                    filterNotes(s.toString());
+                }
+            });
+        }
 
         btnAdd.setOnClickListener(v -> authenticateAndCreate());
 
@@ -118,14 +120,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void lockUI() {
-        rvNotes.setVisibility(View.INVISIBLE);
-        btnAdd.setVisibility(View.INVISIBLE);
+        if (rvNotes != null) rvNotes.setVisibility(View.INVISIBLE);
+        if (btnAdd != null) btnAdd.setVisibility(View.INVISIBLE);
         if (etSearch != null) etSearch.setVisibility(View.INVISIBLE);
     }
 
     private void unlockUI() {
-        rvNotes.setVisibility(View.VISIBLE);
-        btnAdd.setVisibility(View.VISIBLE);
+        if (rvNotes != null) rvNotes.setVisibility(View.VISIBLE);
+        if (btnAdd != null) btnAdd.setVisibility(View.VISIBLE);
         if (etSearch != null) etSearch.setVisibility(View.VISIBLE);
         refreshList();
     }
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onAuthSuccess(Cipher c) {
                     unlockUI();
+                    // [FIXED] ใช้ Resource string
                     Toast.makeText(MainActivity.this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
                 }
                 @Override
@@ -145,14 +148,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } else {
-            // [เพิ่มส่วนนี้] ถ้าสร้าง Key ไม่ได้ ให้แจ้งเตือนและปิดแอป
-            Toast.makeText(this, "Error: ไม่พบ KeyStore หรือยังไม่ได้ตั้งค่า Lock Screen/Fingerprint", Toast.LENGTH_LONG).show();
-            finish();
+            // [FIXED] แจ้งเตือน Error แบบดึงจาก strings.xml
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.title_security_error))
+                    .setMessage(getString(R.string.msg_keystore_error))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.btn_close_app), (d, w) -> finish())
+                    .show();
         }
     }
 
     private void authenticateAndCreate() {
         Cipher cipher = KeyStoreManager.getEncryptCipher();
+        if (cipher == null) return;
+
         DialogHelper.showAuthDialog(this, cipher, new DialogHelper.AuthCallback() {
             @Override
             public void onAuthSuccess(Cipher c) {
@@ -164,25 +173,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // ใน MainActivity.java
-
     private void openNoteDetail(NoteManager.Note n) {
         try {
-            // 1. แยก Image Path ออกจาก Content (ถ้ามี)
             String realContent = n.content;
             String imagePath = null;
 
             if (n.content.contains("|")) {
                 String[] split = n.content.split("\\|");
-                realContent = split[0]; // ส่วนข้อความ (IV:Text)
-                if (split.length > 1) {
-                    imagePath = split[1];   // ส่วนชื่อไฟล์รูป
-                }
+                realContent = split[0];
+                if (split.length > 1) imagePath = split[1];
             }
 
-            // 2. เช็ค Format Text (IV:Cipher)
             String[] parts = realContent.split(":");
             if (parts.length != 2) {
+                // Fallback for plain text / legacy notes
                 startActivityForPlaintext(n, n.content, null);
                 return;
             }
@@ -191,8 +195,6 @@ public class MainActivity extends AppCompatActivity {
             byte[] enc = Base64.decode(parts[1], Base64.DEFAULT);
 
             Cipher decryptCipher = KeyStoreManager.getDecryptCipher(iv);
-
-            // ตัวแปร final เพื่อใช้ใน lambda
             String finalImagePath = imagePath;
 
             DialogHelper.showAuthDialog(this, decryptCipher, new DialogHelper.AuthCallback() {
@@ -201,12 +203,10 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         byte[] decoded = c.doFinal(enc);
                         String plainText = new String(decoded, StandardCharsets.UTF_8);
-
-                        // ส่ง Text ที่ถอดรหัสแล้ว + Image Path ไปหน้า Detail
                         startActivityForPlaintext(n, plainText, finalImagePath);
-
                     } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, "Decryption Failed", Toast.LENGTH_SHORT).show();
+                        // [FIXED]
+                        Toast.makeText(MainActivity.this, getString(R.string.msg_decrypt_failed), Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
@@ -215,17 +215,17 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+            // [FIXED]
+            Toast.makeText(MainActivity.this, getString(R.string.msg_open_error), Toast.LENGTH_SHORT).show();
         }
     }
 
-    // ปรับฟังก์ชันนี้ให้รับ imagePath ด้วย
     private void startActivityForPlaintext(NoteManager.Note n, String content, String imagePath) {
         Intent i = new Intent(MainActivity.this, NoteDetailActivity.class);
         i.putExtra(NoteDetailActivity.EXTRA_ID, n.id);
         i.putExtra(NoteDetailActivity.EXTRA_TITLE, n.title);
         i.putExtra(NoteDetailActivity.EXTRA_CONTENT, content);
         i.putExtra(NoteDetailActivity.EXTRA_PINNED, n.pinned);
-        // ส่งชื่อไฟล์รูปไปด้วย (ถ้ามี)
         if (imagePath != null) {
             i.putExtra(NoteDetailActivity.EXTRA_IMAGE_PATH, imagePath);
         }
@@ -234,31 +234,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshList() {
         allNotes = manager.getAll();
-
-        if (etSearch.getText().length() > 0) {
+        if (etSearch != null && etSearch.getText().length() > 0) {
             filterNotes(etSearch.getText().toString());
         } else {
             adapter.setItems(allNotes);
         }
+        updateEmptyView();
     }
 
-    // [FIXED] ฟังก์ชันกรองข้อมูล
     private void filterNotes(String query) {
         if (query.isEmpty()) {
-            // ถ้าไม่มีคำค้นหา ให้แสดงทั้งหมด
             adapter.setItems(allNotes);
         } else {
+            List<NoteManager.ListItem> filtered = new ArrayList<>();
             String lowerQuery = query.toLowerCase();
 
-            // [แก้ไข] ใช้ new ArrayList() แทน Collections.emptyList()
-            List<NoteManager.ListItem> filtered = new ArrayList<>();
-
             for (NoteManager.ListItem item : allNotes) {
-                // เช็คว่าเป็น Note หรือไม่ (Header ค้นไม่ได้)
                 if (item instanceof NoteManager.Note) {
                     NoteManager.Note note = (NoteManager.Note) item;
-
-                    // ค้นหาจาก Title (เพราะ Content เข้ารหัสอยู่)
                     if (note.title.toLowerCase().contains(lowerQuery)) {
                         filtered.add(note);
                     }
@@ -266,19 +259,32 @@ public class MainActivity extends AppCompatActivity {
             }
             adapter.setItems(filtered);
         }
+        updateEmptyView(); // ต้องอัปเดต view ว่างด้วยถ้าค้นแล้วไม่เจอ
+    }
+
+    private void updateEmptyView() {
+        if (tvEmpty != null) {
+            tvEmpty.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void showEditDeleteDialog(NoteManager.Note n) {
-        String pinAction = n.pinned ? "เลิกปักหมุด" : "ปักหมุด";
-        CharSequence[] items = { pinAction, "ลบ" };
+        // [FIXED] ใช้ getString ทั้งหมด
+        String pinAction = n.pinned ? getString(R.string.menu_unpin) : getString(R.string.menu_pin);
+        String deleteAction = getString(R.string.btn_delete);
 
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.dialog_manage_title))
-                .setItems(items, (dialog, which) -> {
-                    if (which == 0) { // Pin/Unpin
+                .setItems(new CharSequence[]{pinAction, deleteAction}, (dialog, which) -> {
+                    if (which == 0) { // Pin
                         boolean newPinState = !n.pinned;
                         manager.setPinned(n.id, newPinState);
-                        refreshList(); // โหลดรายการใหม่ (มันจะเด้งไปอยู่บนสุดเองเพราะ logic sort เดิม)
+                        refreshList();
+                        // [FIXED] Toast message
+                        String msg = newPinState ? getString(R.string.menu_pin) : getString(R.string.menu_unpin);
+                        // (ปรับ: อาจจะทำ string แยก msg_pinned/unpinned ก็ได้ แต่ใช้เมนูแก้ขัดไปก่อนก็เข้าใจได้)
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+
                     } else if (which == 1) { // Delete
                         new AlertDialog.Builder(MainActivity.this)
                                 .setMessage(getString(R.string.dialog_confirm_delete))
@@ -286,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                                     manager.deleteNote(n.id);
                                     refreshList();
                                 })
-                                .setNegativeButton(getString(R.string.cancel), null)
+                                .setNegativeButton(getString(R.string.btn_cancel), null)
                                 .show();
                     }
                 })
