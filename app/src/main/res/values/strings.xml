@@ -33,6 +33,7 @@
     <string name="desc_back">Back</string>
     <string name="desc_save">Save</string>
     <string name="desc_pin">Pin note</string>
+    <string name="desc_upload_image">Upload image</string>
 
     <string name="preview_title">Topic</string>
     <string name="preview_excerpt">Note example</string>

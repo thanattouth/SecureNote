@@ -1,11 +1,17 @@
 package com.example.securenote;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -23,11 +29,16 @@ public class NoteDetailActivity extends AppCompatActivity {
     private EditText etContent;
     private ImageButton btnSave;
     private ImageButton btnPin;
+    private ImageButton btnUploadImage;
+    private ImageView ivNoteImage;
 
     private NoteManager manager;
     private String noteId;
     private String currentPin;
     private boolean isPinned;
+    private Uri selectedImageUri;
+
+    private ActivityResultLauncher<String> imagePickerLauncher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,8 +53,10 @@ public class NoteDetailActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnSave = findViewById(R.id.btnSave);
         btnPin = findViewById(R.id.btnPin);
+        btnUploadImage = findViewById(R.id.btnUploadImage);
         etTitle = findViewById(R.id.etDetailTitle);
         etContent = findViewById(R.id.etDetailContent);
+        ivNoteImage = findViewById(R.id.ivNoteImage);
 
         // Get data from intent
         noteId = getIntent().getStringExtra(EXTRA_ID);
@@ -56,6 +69,16 @@ public class NoteDetailActivity extends AppCompatActivity {
         if (content != null) etContent.setText(content);
 
         updatePinButton();
+
+        // Initialize the ActivityResultLauncher
+        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        selectedImageUri = uri;
+                        ivNoteImage.setImageURI(selectedImageUri);
+                        ivNoteImage.setVisibility(View.VISIBLE);
+                    }
+                });
 
         btnBack.setOnClickListener(v -> {
             finish();
@@ -75,6 +98,10 @@ public class NoteDetailActivity extends AppCompatActivity {
             updatePinButton();
             String message = isPinned ? "Note pinned" : "Note unpinned";
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        });
+
+        btnUploadImage.setOnClickListener(v -> {
+            imagePickerLauncher.launch("image/*");
         });
     }
 
@@ -103,10 +130,12 @@ public class NoteDetailActivity extends AppCompatActivity {
             }
         }
 
+        // TODO: Save the selectedImageUri to the NoteManager
+
         if (noteId == null) {
             noteId = UUID.randomUUID().toString();
             manager.addNote(noteId, newTitle, contentToSave);
-            manager.setPinned(noteId, isPinned); // also save pinned status for new notes
+            manager.setPinned(noteId, isPinned);
         } else {
             manager.updateNote(noteId, newTitle, contentToSave);
         }
