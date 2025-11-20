@@ -56,5 +56,6 @@
 
     <string name="msg_image_pending">เลือกรูปแล้ว รอการเข้ารหัสเมื่อกดบันทึก</string>
     <string name="msg_encryption_failed">การเข้ารหัสล้มเหลว</string>
+    <string name="session_expired">เซสซันหมดอายุ โปรดสแกนลายนิ้วมืออีกครั้ง</string>
 
 </resources>

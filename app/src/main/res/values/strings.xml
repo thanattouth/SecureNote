@@ -55,4 +55,6 @@
     <string name="msg_image_pending">Image selected, ready for encryption.</string>
     <string name="msg_encryption_failed">Encryption Failed</string>
 
+    <string name="session_expired">Session expired. Please tap again to refresh.</string>
+
 </resources>

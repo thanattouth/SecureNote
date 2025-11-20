@@ -178,6 +178,17 @@ public class MainActivity extends AppCompatActivity {
             String realContent = n.content;
             String imagePath = null;
 
+            int pipeIndex = n.content.lastIndexOf("|");
+
+            if (pipeIndex != -1) {
+                // เจอตัวคั่น! แยก Text กับ Image Path ออกจากกัน
+                realContent = n.content.substring(0, pipeIndex);
+                imagePath = n.content.substring(pipeIndex + 1);
+
+                // Debug: เช็คว่าตัดออกมาได้จริงไหม
+                System.out.println("Found Image: " + imagePath);
+            }
+
             if (n.content.contains("|")) {
                 String[] split = n.content.split("\\|");
                 realContent = split[0];
