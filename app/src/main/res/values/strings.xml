@@ -2,51 +2,48 @@
 <resources>
     <string name="app_name">SecureNote</string>
 
-    <string name="btn_ok">OK</string>
-    <string name="btn_delete">Delete</string>
-    <string name="btn_save">Save</string>
-    <string name="btn_cancel">Cancel</string> <string name="msg_login_success">Login successful</string>
-    <string name="msg_save_success">Note saved successfully</string>
-    <string name="msg_pin_length_error">Please enter 4 digits</string>
+    <string name="btn_ok">accept</string>
+    <string name="btn_delete">delete</string>
+    <string name="btn_save">save</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="msg_login_success">login successfully</string>
+    <string name="msg_save_success">save success</string>
+    <string name="msg_pin_length_error">please enter 4 number</string>
     <string name="msg_auth_error_prefix">Authentication error: %1$s</string>
-    <string name="msg_auth_failed">Authentication failed. Please try again.</string>
+    <string name="msg_auth_failed">authentication failed</string>
 
-    <string name="bio_title">Authentication Required</string>
-    <string name="bio_subtitle">Use your fingerprint or face ID to decrypt</string>
+    <string name="bio_title">Verify your identity to decrypt</string>
+    <string name="bio_subtitle">Use fingerprint sensor to decrypt</string>
 
-    <string name="dialog_manage_title">Manage Note</string>
-    <string name="dialog_confirm_delete">Are you sure you want to delete this note?</string>
+    <string name="dialog_manage_title">Note management</string>
+    <string name="dialog_confirm_delete">confirm delete</string>
 
     <string name="pin_title">Enter PIN</string>
-    <string name="pin_sub">Enter your 4-digit security code</string>
+    <string name="pin_sub">Enter your 4-digit passcode</string>
+
+    <!-- descriptions used by activity_note_detail -->
+    <string name="desc_upload_image">Upload image</string>
+    <string name="desc_pin">Pin</string>
+
     <string name="icon_desc">Lock Icon</string>
 
     <string name="add_note">Add Note</string>
     <string name="no_notes">No notes available</string>
-    <string name="hint_search">Search notes…</string>
-    <string name="hint_title">Title</string>
-    <string name="hint_content">Type something secure here…</string>
 
-    <string name="desc_back">Go back</string>
-    <string name="desc_save">Save note</string>
-    <string name="desc_pin">Pin/Unpin note</string>
-    <string name="desc_upload_image">Upload image</string>
+    <string name="hint_search">Search</string>
+    <string name="hint_title">Topic</string>
+    <string name="hint_content">Enter your note here …</string>
 
-    <string name="preview_title">Note Title</string>
-    <string name="preview_excerpt">This is a preview of the note content...</string>
+    <string name="desc_back">Back</string>
+    <string name="desc_save">Save</string>
 
-    <string name="menu_pin">Pin</string>
-    <string name="menu_unpin">Unpin</string>
+    <string name="preview_title">Topic</string>
+    <string name="preview_excerpt">Note example</string>
 
-    <string name="title_security_error">Security Error</string>
-    <string name="msg_keystore_error">Cannot access KeyStore. Possible reasons:\n1. Screen lock/Fingerprint not set\n2. Key invalidated (New fingerprint added)\n3. Hardware not supported</string>
-
-    <string name="title_security_risk">Security Risk</string>
-    <string name="msg_device_rooted">Device appears to be rooted. Unsafe to proceed.</string>
-
-    <string name="msg_decrypt_failed">Decryption Failed</string>
-    <string name="msg_open_error">Error opening note</string>
-
-    <string name="btn_close_app">Close App</string>
-
+    <!-- Accessibility: labels for PIN fields -->
+    <string name="pin_digit_desc_1">PIN digit 1</string>
+    <string name="pin_digit_desc_2">PIN digit 2</string>
+    <string name="pin_digit_desc_3">PIN digit 3</string>
+    <string name="pin_digit_desc_4">PIN digit 4</string>
 </resources>

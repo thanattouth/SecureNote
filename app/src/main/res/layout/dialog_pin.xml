@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    card_view:cardCornerRadius="24dp"
+    card_view:cardElevation="8dp"
+    card_view:cardBackgroundColor="@color/bg_cream">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/dialog_pin_padding_top"
+        android:paddingBottom="@dimen/dialog_pin_padding_bottom"
+        android:paddingStart="@dimen/padding_md"
+        android:paddingEnd="@dimen/padding_md"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/iconLock"
+            android:layout_width="@dimen/dialog_pin_icon"
+            android:layout_height="@dimen/dialog_pin_icon"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_lock"
+            android:contentDescription="@string/icon_desc"
+            app:tint="@color/text_dark"
+            android:layout_marginBottom="@dimen/padding_md" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_title"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/text_dark" />
+
+        <!-- ถ้า tvSub ขึ้น lint ว่า contrast ต่ำ ให้ใช้สีเข้มขึ้น -->
+        <TextView
+            android:id="@+id/tvSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_sub"
+            android:textSize="@dimen/text_excerpt"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/padding_sm"
+            android:textColor="@color/text_dark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/padding_lg"
+            android:layout_marginBottom="@dimen/padding_lg">
+
+            <!-- แต่ละช่อง PIN เพิ่ม contentDescription เพื่อให้ screen reader อ่านได้ -->
+            <EditText
+                android:id="@+id/pin1"
+                style="@style/PinEdit"
+                android:background="@drawable/bg_pin_field"
+                android:inputType="numberPassword"
+                android:importantForAccessibility="yes"
+                android:autofillHints="no"
+                android:layout_width="@dimen/pin_field_size"
+                android:layout_height="@dimen/pin_field_size"
+                android:hint="●" />
+            <!-- android:contentDescription="@string/pin_digit_desc_1" -->
+
+
+        <View android:layout_width="@dimen/pin_field_gap" android:layout_height="0dp" />
+
+        <EditText
+            android:id="@+id/pin2"
+            style="@style/PinEdit"
+            android:background="@drawable/bg_pin_field"
+            android:inputType="numberPassword"
+            android:importantForAccessibility="yes"
+            android:autofillHints="no"
+            android:layout_width="@dimen/pin_field_size"
+            android:layout_height="@dimen/pin_field_size"
+            android:hint="●" />
+            <!-- android:contentDescription="@string/pin_digit_desc_2" -->
+
+
+        <View android:layout_width="@dimen/pin_field_gap" android:layout_height="0dp" />
+
+        <EditText
+            android:id="@+id/pin3"
+            style="@style/PinEdit"
+            android:background="@drawable/bg_pin_field"
+            android:inputType="numberPassword"
+            android:importantForAccessibility="yes"
+            android:autofillHints="no"
+            android:layout_width="@dimen/pin_field_size"
+            android:layout_height="@dimen/pin_field_size"
+            android:hint="●" />
+            <!-- android:contentDescription="@string/pin_digit_desc_3" -->
+
+
+        <View android:layout_width="@dimen/pin_field_gap" android:layout_height="0dp" />
+
+        <EditText
+            android:id="@+id/pin4"
+            style="@style/PinEdit"
+            android:background="@drawable/bg_pin_field"
+            android:inputType="numberPassword"
+            android:importantForAccessibility="yes"
+            android:autofillHints="no"
+            android:layout_width="@dimen/pin_field_size"
+            android:layout_height="@dimen/pin_field_size"
+            android:hint="●" />
+            <!--android:contentDescription="@string/pin_digit_desc_4"-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/padding_sm">
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_cancel_height"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/text_excerpt"
+            android:background="@android:color/transparent"/>
+
+        <View android:layout_width="@dimen/padding_md" android:layout_height="0dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnOk"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_ok_height"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_button_filled"
+            android:text="@string/btn_ok"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_excerpt"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
+</androidx.cardview.widget.CardView>

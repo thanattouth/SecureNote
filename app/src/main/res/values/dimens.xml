@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- spacing -->
+    <dimen name="padding_xs">6dp</dimen>
+    <dimen name="padding_sm">10dp</dimen>
+    <dimen name="padding_md">16dp</dimen>
+    <dimen name="padding_lg">20dp</dimen>
+
+    <!-- header -->
+    <dimen name="header_height">88dp</dimen>
+    <dimen name="header_padding_top">28dp</dimen>
+
+    <!-- text sizes -->
+    <dimen name="text_header">28sp</dimen>
+    <dimen name="text_title">18sp</dimen>
+    <dimen name="text_excerpt">14sp</dimen>
+    <dimen name="text_date">12sp</dimen>
+
+    <!-- recycler -->
+    <dimen name="rv_padding_top">100dp</dimen>
+    <dimen name="rv_padding_side">16dp</dimen>
+
+    <!-- fab -->
+    <dimen name="fab_size">64dp</dimen>
+    <dimen name="fab_margin">20dp</dimen>
+
+    <!-- item -->
+    <dimen name="item_padding_h">20dp</dimen>
+    <dimen name="item_padding_v">10dp</dimen>
+    <dimen name="item_divider_height">0.5dp</dimen>
+    <dimen name="item_margin_top">10dp</dimen>
+
+    <!-- ios bottom bar -->
+    <dimen name="bottombar_height">72dp</dimen>
+    <dimen name="bottombar_padding">16dp</dimen>
+
+    <!-- search -->
+    <dimen name="search_icon_size">20dp</dimen>
+
+    <!-- add button (iOS) -->
+    <dimen name="btn_add_size">48dp</dimen>
+
+    <!-- note detail -->
+    <dimen name="note_detail_padding">16dp</dimen>
+    <dimen name="btn_small_size">32dp</dimen>
+    <dimen name="detail_title_size">24sp</dimen>
+    <dimen name="detail_content_text">16sp</dimen>
+
+    <!-- dialog note -->
+    <dimen name="dialog_padding">20dp</dimen>
+    <dimen name="dialog_min_width">300dp</dimen>
+    <dimen name="dialog_content_height">160dp</dimen>
+
+    <!-- dialog pin -->
+    <dimen name="dialog_pin_width">300dp</dimen>
+    <dimen name="dialog_pin_padding_top">32dp</dimen>
+    <dimen name="dialog_pin_padding_bottom">24dp</dimen>
+    <dimen name="dialog_pin_icon">48dp</dimen>
+    <dimen name="pin_field_gap">12dp</dimen>
+    <dimen name="pin_field_size">56dp</dimen>
+
+    <!-- pin buttons -->
+    <dimen name="btn_cancel_height">56dp</dimen>
+    <dimen name="btn_ok_height">48dp</dimen>
+</resources>

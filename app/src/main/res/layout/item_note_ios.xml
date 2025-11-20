@@ -5,68 +5,48 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bg_cream"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingStart="@dimen/item_padding_h"
+    android:paddingEnd="@dimen/item_padding_h"
+    android:paddingTop="@dimen/item_padding_v"
+    android:paddingBottom="@dimen/item_padding_v"
+    android:background="@color/bg_cream">
 
-    <!-- Container for Title and Pin Icon -->
-    <RelativeLayout
+    <TextView
+        android:id="@+id/tvNoteTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/ivPinIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:src="@android:drawable/star_on"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-
-        <TextView
-            android:id="@+id/tvNoteTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/ivPinIndicator"
-            android:layout_centerVertical="true"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/text_dark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="@string/preview_title" />
-
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        tools:text="@string/preview_title"
+        android:textColor="@color/text_dark"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end" />
 
     <TextView
         android:id="@+id/tvNoteExcerpt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:maxLines="2"
+        tools:text="@string/preview_excerpt"
         android:textColor="@color/text_gray"
-        android:textSize="14sp"
-        tools:text="@string/preview_excerpt" />
+        android:textSize="@dimen/text_excerpt"
+        android:layout_marginTop="@dimen/padding_sm"
+        android:maxLines="2"
+        android:ellipsize="end" />
 
     <TextView
         android:id="@+id/tvNoteDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/padding_md"
         android:textColor="@color/text_gray"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_date"
         tools:text="15/05/2024" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="@dimen/item_divider_height"
+        android:layout_marginTop="@dimen/item_margin_top"
         android:background="#22000000" />
 
 </LinearLayout>

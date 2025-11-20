@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_xs">8dp</dimen>
+    <dimen name="padding_sm">12dp</dimen>
+    <dimen name="padding_md">20dp</dimen>
+    <dimen name="padding_lg">28dp</dimen>
+
+    <dimen name="header_height">98dp</dimen>
+    <dimen name="header_padding_top">32dp</dimen>
+
+    <dimen name="text_header">30sp</dimen>
+    <dimen name="text_title">20sp</dimen>
+    <dimen name="text_excerpt">16sp</dimen>
+    <dimen name="text_date">14sp</dimen>ฆ
+
+    <dimen name="rv_padding_top">120dp</dimen>
+    <dimen name="rv_padding_side">20dp</dimen>
+
+    <dimen name="fab_size">72dp</dimen>
+    <dimen name="fab_margin">24dp</dimen>
+
+    <dimen name="item_padding_h">24dp</dimen>
+    <dimen name="item_padding_v">12dp</dimen>
+    <dimen name="item_divider_height">1dp</dimen>
+    <dimen name="item_margin_top">12dp</dimen>
+
+    <dimen name="bottombar_height">84dp</dimen>
+    <dimen name="bottombar_padding">20dp</dimen>
+    <dimen name="search_icon_size">22dp</dimen>
+    <dimen name="btn_add_size">56dp</dimen>
+
+    <dimen name="note_detail_padding">20dp</dimen>
+    <dimen name="btn_small_size">36dp</dimen>
+    <dimen name="detail_title_size">26sp</dimen>
+    <dimen name="detail_content_text">18sp</dimen>
+
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="dialog_min_width">320dp</dimen>
+    <dimen name="dialog_content_height">180dp</dimen>
+
+    <dimen name="dialog_pin_width">320dp</dimen>
+    <dimen name="dialog_pin_padding_top">36dp</dimen>
+    <dimen name="dialog_pin_padding_bottom">28dp</dimen>
+    <dimen name="dialog_pin_icon">56dp</dimen>
+    <dimen name="pin_field_gap">14dp</dimen>
+    <dimen name="pin_field_size">64dp</dimen>
+
+    <dimen name="btn_cancel_height">64dp</dimen>
+    <dimen name="btn_ok_height">56dp</dimen>
+</resources>
