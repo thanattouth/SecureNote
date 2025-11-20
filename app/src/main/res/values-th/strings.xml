@@ -2,39 +2,59 @@
 <resources>
     <string name="app_name">SecureNote</string>
 
-    <string name="btn_ok">ยอมรับ</string>
+    <string name="btn_ok">ตกลง</string>
     <string name="btn_delete">ลบ</string>
     <string name="btn_save">บันทึก</string>
-    <string name="cancel">ยกเลิก</string>
+    <string name="btn_cancel">ยกเลิก</string>
 
     <string name="msg_login_success">เข้าสู่ระบบสำเร็จ</string>
-    <string name="msg_save_success">บันทึกความสำเร็จ</string>
-    <string name="msg_pin_length_error">กรุณาใส่เลข 4 หลัก</string>
-    <string name="msg_auth_error_prefix">ข้อผิดพลาดการตรวจสอบสิทธิ์: %1$s</string>
-    <string name="msg_auth_failed">การตรวจสอบสิทธิ์ล้มเหลว</string>
+    <string name="msg_save_success">บันทึกเรียบร้อยแล้ว</string>
+    <string name="msg_pin_length_error">กรุณากรอกให้ครบ 4 หลัก</string>
+    <string name="msg_auth_error_prefix">เกิดข้อผิดพลาดในการยืนยันตัวตน: %1$s</string>
+    <string name="msg_auth_failed">ยืนยันตัวตนไม่ผ่าน กรุณาลองใหม่</string>
 
-    <string name="bio_title">ยืนยันตัวตนของคุณเพื่อถอดรหัส</string>
-    <string name="bio_subtitle">ใช้เซ็นเซอร์ลายนิ้วมือเพื่อถอดรหัส</string>
+    <string name="bio_title">ยืนยันตัวตนเพื่อถอดรหัส</string>
+    <string name="bio_subtitle">สแกนลายนิ้วมือหรือใบหน้าเพื่อเข้าถึงข้อมูล</string>
 
-    <string name="dialog_manage_title">การจัดการบันทึก</string>
-    <string name="dialog_confirm_delete">ยืนยันการลบ</string>
+    <string name="dialog_manage_title">จัดการโน้ต</string>
+    <string name="dialog_confirm_delete">คุณแน่ใจหรือไม่ว่าต้องการลบโน้ตนี้?</string>
 
-    <string name="pin_title">กรอกรหัส PIN</string>
-    <string name="pin_sub">ป้อนรหัสผ่าน 4 หลักของคุณ</string>
-    <string name="icon_desc">Lock Icon</string>
+    <string name="pin_title">ใส่รหัส PIN</string>
+    <string name="pin_sub">กรอกรหัสผ่าน 4 หลักของคุณ</string>
+    <string name="icon_desc">รูปแม่กุญแจ</string>
 
-    <string name="add_note">เพิ่มบันทึก</string>
-    <string name="no_notes">ไม่มีบันทึก</string>
-
-    <string name="hint_search">ค้นหา</string>
+    <string name="add_note">เพิ่มโน้ต</string>
+    <string name="no_notes">ไม่มีรายการโน้ต</string>
+    <string name="hint_search">ค้นหา...</string>
     <string name="hint_title">หัวข้อ</string>
-    <string name="hint_content">เขียนบันทึกของคุณที่นี่…</string>
+    <string name="hint_content">พิมพ์เนื้อหาที่นี่...</string>
 
-    <string name="desc_back">กลับ</string>
+    <string name="desc_back">ย้อนกลับ</string>
     <string name="desc_save">บันทึก</string>
+    <string name="desc_pin">ปักหมุด</string>
+    <string name="desc_upload_image">อัปโหลดรูปภาพ</string>
 
-    <string name="preview_title">หัวข้อ</string>
-    <string name="preview_excerpt">บันทึกตัวอย่าง</string>
+    <string name="preview_title">หัวข้อตัวอย่าง</string>
+    <string name="preview_excerpt">ตัวอย่างเนื้อหาโน้ตแสดงที่นี่...</string>
 
+    <string name="menu_pin">ปักหมุด</string>
+    <string name="menu_unpin">เลิกปักหมุด</string>
+
+    <string name="title_security_error">ข้อผิดพลาดความปลอดภัย</string>
+    <string name="msg_keystore_error">ไม่สามารถเข้าถึง KeyStore ได้\nสาเหตุที่เป็นไปได้:\n1. ไม่ได้ตั้งรหัสล็อคหน้าจอ/ลายนิ้วมือ\n2. มีการเปลี่ยน/เพิ่มลายนิ้วมือใหม่ (Key Invalidated)\n3. เครื่องไม่รองรับ Hardware Security</string>
+
+    <string name="title_security_risk">ความเสี่ยงด้านความปลอดภัย</string>
+    <string name="msg_device_rooted">ตรวจพบการ Root เครื่อง ไม่ปลอดภัยในการใช้งาน</string>
+
+    <string name="msg_decrypt_failed">การถอดรหัสล้มเหลว</string>
+    <string name="msg_open_error">เกิดข้อผิดพลาดในการเปิดโน้ต</string>
+
+    <string name="btn_close_app">ปิดแอป</string>
+
+    <string name="msg_note_pinned">ปักหมุดเรียบร้อย</string>
+    <string name="msg_note_unpinned">ยกเลิกการปักหมุด</string>
+
+    <string name="msg_image_pending">เลือกรูปแล้ว รอการเข้ารหัสเมื่อกดบันทึก</string>
+    <string name="msg_encryption_failed">การเข้ารหัสล้มเหลว</string>
 
 </resources>

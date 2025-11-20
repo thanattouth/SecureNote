@@ -101,7 +101,10 @@ public class NoteDetailActivity extends AppCompatActivity {
         btnPin.setOnClickListener(v -> {
             isPinned = !isPinned;
             updatePinButton();
-            Toast.makeText(this, isPinned ? "ปักหมุด" : "เลิกปักหมุด", Toast.LENGTH_SHORT).show();
+
+            // ✅ ใช้ getString เลือกข้อความตามสถานะ
+            String msg = isPinned ? getString(R.string.msg_note_pinned) : getString(R.string.msg_note_unpinned);
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         });
 
         btnUploadImage.setOnClickListener(v -> {
@@ -130,6 +133,13 @@ public class NoteDetailActivity extends AppCompatActivity {
         // 1. ขอ Cipher หลักสำหรับ Text
         Cipher textCipher = KeyStoreManager.getEncryptCipher();
         if (textCipher == null) return;
+
+        Cipher encryptCipher = KeyStoreManager.getEncryptCipher();
+        if (encryptCipher == null) {
+            // [จุดที่ 3: แก้ไข Error Message]
+            Toast.makeText(this, getString(R.string.msg_keystore_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // 2. ยืนยันตัวตน
         DialogHelper.showAuthDialog(this, textCipher, new DialogHelper.AuthCallback() {
@@ -173,12 +183,18 @@ public class NoteDetailActivity extends AppCompatActivity {
                         manager.setPinned(noteId, isPinned);
                     }
 
+                    if (selectedImageUri != null) {
+                        // ✅ ใช้ getString แทน "เตรียมรูปรอการเข้ารหัส..."
+                        Toast.makeText(NoteDetailActivity.this, getString(R.string.msg_image_pending), Toast.LENGTH_SHORT).show();
+                    }
+
                     Toast.makeText(NoteDetailActivity.this, getString(R.string.msg_save_success), Toast.LENGTH_SHORT).show();
                     finish();
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(NoteDetailActivity.this, "Error saving note", Toast.LENGTH_SHORT).show();
+                    // [จุดที่ 4: แก้ไข Encryption Error]
+                    Toast.makeText(NoteDetailActivity.this, getString(R.string.msg_encryption_failed), Toast.LENGTH_SHORT).show();
                 }
             }
 
