@@ -1,8 +1,6 @@
 package com.example.securenote;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,10 +18,9 @@ public class DialogHelper {
         void onCancelled();
     }
 
-    // ฟังก์ชันเรียก Biometric พร้อม CryptoObject
     public static void showAuthDialog(FragmentActivity activity, Cipher cipher, AuthCallback callback) {
         if (cipher == null) {
-            Toast.makeText(activity, "KeyStore Error: Cipher initialization failed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.msg_keystore_error, Toast.LENGTH_SHORT).show(); // ✅
             callback.onCancelled();
             return;
         }
@@ -35,7 +32,8 @@ public class DialogHelper {
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                    Toast.makeText(activity, "Authentication Error: " + errString, Toast.LENGTH_SHORT).show();
+                    // ✅ Use getString from activity
+                    Toast.makeText(activity, activity.getString(R.string.msg_auth_error_prefix, errString), Toast.LENGTH_SHORT).show();
                 }
                 callback.onCancelled();
             }
@@ -43,7 +41,6 @@ public class DialogHelper {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                // *** สำคัญ: รับ Cipher ที่ปลดล็อคจาก Hardware แล้ว ***
                 try {
                     Cipher authenticatedCipher = result.getCryptoObject().getCipher();
                     callback.onAuthSuccess(authenticatedCipher);
@@ -55,17 +52,15 @@ public class DialogHelper {
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                // ไม่ต้องทำอะไร ปล่อยให้ระบบจัดการ (สั่นเตือน)
             }
         });
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle(activity.getString(R.string.bio_title))
-                .setSubtitle(activity.getString(R.string.bio_subtitle))
-                .setNegativeButtonText(activity.getString(R.string.btn_cancel))
+                .setTitle(activity.getString(R.string.bio_title)) // ✅
+                .setSubtitle(activity.getString(R.string.bio_subtitle)) // ✅
+                .setNegativeButtonText(activity.getString(R.string.btn_cancel)) // ✅
                 .build();
 
-        // ส่ง Cipher เข้าไปยืนยัน
         biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
     }
 }

@@ -14,12 +14,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+
 import javax.crypto.Cipher;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,12 +35,14 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvNotes;
     private ImageButton btnAdd;
     private EditText etSearch;
-    private TextView tvEmpty; // เพิ่ม reference (ถ้ามีใน xml)
+    private TextView tvEmpty;
 
-    // เก็บรายการทั้งหมดไว้เป็น Master Data เพื่อใช้กรอง
+    // Constants for Internal Logic (ไม่ต้องแปล)
+    private static final String SECURITY_BREACH_TAG = "SECURITY BREACH";
+    private static final String PREFS_NAME = "notes_prefs";
+
     private List<NoteManager.ListItem> allNotes = new ArrayList<>();
 
-    // ฟังก์ชันเช็ค Root อย่างง่าย
     private boolean isDeviceRooted() {
         String[] paths = {
                 "/system/app/Superuser.apk", "/sbin/su", "/system/bin/su",
@@ -56,18 +64,22 @@ public class MainActivity extends AppCompatActivity {
 
         // 2. Security Check: Root Detection
         if (isDeviceRooted()) {
-            // [FIXED] ใช้ getString แทนข้อความ Hardcode
             new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.title_security_risk))
-                    .setMessage(getString(R.string.msg_device_rooted))
+                    .setTitle(R.string.title_security_risk)
+                    .setMessage(R.string.msg_device_rooted)
                     .setCancelable(false)
-                    .setPositiveButton(getString(R.string.btn_close_app), (d, w) -> finishAffinity())
+                    .setPositiveButton(R.string.btn_close_app, (d, w) -> finishAffinity())
                     .show();
-            return; // หยุดการทำงาน
+            return;
         }
 
         // 3. Init Hardware Key
-        KeyStoreManager.generateSecretKey();
+        // ถ้า KeyStore มีปัญหา (เช่น เครื่องไม่รองรับ) จะแจ้งเตือน User
+        try {
+            KeyStoreManager.generateSecretKey();
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.msg_keystore_error, Toast.LENGTH_LONG).show();
+        }
 
         setContentView(R.layout.activity_main_ios);
 
@@ -78,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         rvNotes = findViewById(R.id.rvNotes);
         btnAdd = findViewById(R.id.btnAdd);
         etSearch = findViewById(R.id.etSearch);
-        // tvEmpty = findViewById(R.id.tvEmpty); // ถ้ามี
+        // tvEmpty = findViewById(R.id.tvEmpty); // เปิดใช้ถ้ามี View นี้ใน XML
 
         lockUI();
 
@@ -113,10 +125,57 @@ public class MainActivity extends AppCompatActivity {
         performAppLock();
     }
 
+    // ✅ ฟังก์ชันชูโรง: Zero Trust Check (เช็คทุกครั้งที่กลับมาหน้า Main)
     @Override
     protected void onResume() {
         super.onResume();
+
+        // เช็คสถานะระเบิด
+        try {
+            // ลองเรียกใช้ Cipher ดู ถ้า Key พัง (เพราะนิ้วเปลี่ยน) มันจะโยน Exception
+            Cipher cipher = KeyStoreManager.getEncryptCipher();
+            if (cipher == null) {
+                // กรณีเป็น null อาจจะเกิดจาก KeyStore Error ทั่วไป หรือ Key Invalidated
+                // แต่ถ้าโค้ด KeyStoreManager ของคุณ throw RuntimeException ออกมา จะเข้า catch ข้างล่าง
+            }
+
+        } catch (RuntimeException e) {
+            // จับข้อความ "SECURITY BREACH" ที่เราตั้งไว้ใน KeyStoreManager
+            if (e.getMessage() != null && e.getMessage().contains(SECURITY_BREACH_TAG)) {
+                performSelfDestructSequence(); // 💥 เรียกฟังก์ชันทำลายล้าง
+                return; // จบการทำงาน ไม่ต้องโหลด List
+            }
+        }
+
         refreshList();
+    }
+
+    // 💥 ฟังก์ชันระเบิดแอพ (ลบข้อมูลเกลี้ยง)
+    private void performSelfDestructSequence() {
+        // 1. ลบไฟล์ทั้งหมดใน Folder ของแอป
+        File dir = getFilesDir();
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            if (children != null) {
+                for (String i : children) {
+                    new File(dir, i).delete();
+                }
+            }
+        }
+
+        // 2. ลบ Database (SharedPreferences)
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().commit();
+
+        // 3. แจ้งเตือนครั้งสุดท้าย (ใช้ Resource String แล้ว!)
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_self_destruct) // ✅ แก้ไข: ไม่ Hardcode
+                .setMessage(R.string.msg_self_destruct)   // ✅ แก้ไข: ไม่ Hardcode
+                .setCancelable(false)
+                .setPositiveButton(R.string.btn_bye, (d, w) -> { // ✅ แก้ไข: ไม่ Hardcode
+                    finishAffinity(); // ปิดแอป
+                    System.exit(0);   // ฆ่า Process
+                })
+                .show();
     }
 
     private void lockUI() {
@@ -133,71 +192,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performAppLock() {
-        Cipher cipher = KeyStoreManager.getEncryptCipher();
-        if (cipher != null) {
-            DialogHelper.showAuthDialog(this, cipher, new DialogHelper.AuthCallback() {
-                @Override
-                public void onAuthSuccess(Cipher c) {
-                    unlockUI();
-                    // [FIXED] ใช้ Resource string
-                    Toast.makeText(MainActivity.this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
-                }
-                @Override
-                public void onCancelled() {
-                    finishAffinity();
-                }
-            });
-        } else {
-            // [FIXED] แจ้งเตือน Error แบบดึงจาก strings.xml
-            new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.title_security_error))
-                    .setMessage(getString(R.string.msg_keystore_error))
-                    .setCancelable(false)
-                    .setPositiveButton(getString(R.string.btn_close_app), (d, w) -> finish())
-                    .show();
+        BiometricManager biometricManager = BiometricManager.from(this);
+        int canAuthenticate = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
+
+        if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
+            Toast.makeText(this, R.string.msg_bio_unavailable, Toast.LENGTH_SHORT).show();
+            unlockUI();
+            return;
         }
+
+        Executor executor = ContextCompat.getMainExecutor(this);
+        BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor,
+                new BiometricPrompt.AuthenticationCallback() {
+                    @Override
+                    public void onAuthenticationError(int errorCode, CharSequence errString) {
+                        super.onAuthenticationError(errorCode, errString);
+                        if (errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
+                                errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                            Toast.makeText(MainActivity.this, getString(R.string.msg_auth_error_prefix, errString), Toast.LENGTH_SHORT).show();
+                        }
+                        finishAffinity();
+                    }
+
+                    @Override
+                    public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+                        super.onAuthenticationSucceeded(result);
+                        unlockUI();
+                        Toast.makeText(MainActivity.this, R.string.msg_unlocked, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.app_name))
+                .setSubtitle(getString(R.string.bio_subtitle))
+                .setNegativeButtonText(getString(R.string.btn_cancel))
+                .build();
+
+        biometricPrompt.authenticate(promptInfo);
     }
 
     private void authenticateAndCreate() {
-        Cipher cipher = KeyStoreManager.getEncryptCipher();
-        if (cipher == null) return;
-
-        DialogHelper.showAuthDialog(this, cipher, new DialogHelper.AuthCallback() {
-            @Override
-            public void onAuthSuccess(Cipher c) {
-                Intent i = new Intent(MainActivity.this, NoteDetailActivity.class);
-                startActivity(i);
-            }
-            @Override
-            public void onCancelled() {}
-        });
+        Intent i = new Intent(MainActivity.this, NoteDetailActivity.class);
+        startActivity(i);
     }
 
     private void openNoteDetail(NoteManager.Note n) {
+        if (n.content.startsWith("FILE:")) {
+            Intent i = new Intent(MainActivity.this, NoteDetailActivity.class);
+            i.putExtra(NoteDetailActivity.EXTRA_ID, n.id);
+            startActivity(i);
+            return;
+        }
+
+        // Legacy Logic (รองรับ Note แบบเก่า)
         try {
             String realContent = n.content;
             String imagePath = null;
 
-            int pipeIndex = n.content.lastIndexOf("|");
-
-            if (pipeIndex != -1) {
-                // เจอตัวคั่น! แยก Text กับ Image Path ออกจากกัน
-                realContent = n.content.substring(0, pipeIndex);
-                imagePath = n.content.substring(pipeIndex + 1);
-
-                // Debug: เช็คว่าตัดออกมาได้จริงไหม
-                System.out.println("Found Image: " + imagePath);
-            }
-
             if (n.content.contains("|")) {
-                String[] split = n.content.split("\\|");
+                String[] split = n.content.split("\\|", 2);
                 realContent = split[0];
-                if (split.length > 1) imagePath = split[1];
+                if (split.length > 1 && !split[1].isEmpty()) {
+                    imagePath = split[1];
+                }
             }
 
             String[] parts = realContent.split(":");
             if (parts.length != 2) {
-                // Fallback for plain text / legacy notes
                 startActivityForPlaintext(n, n.content, null);
                 return;
             }
@@ -216,8 +277,7 @@ public class MainActivity extends AppCompatActivity {
                         String plainText = new String(decoded, StandardCharsets.UTF_8);
                         startActivityForPlaintext(n, plainText, finalImagePath);
                     } catch (Exception e) {
-                        // [FIXED]
-                        Toast.makeText(MainActivity.this, getString(R.string.msg_decrypt_failed), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.msg_decrypt_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
@@ -226,8 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            // [FIXED]
-            Toast.makeText(MainActivity.this, getString(R.string.msg_open_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, R.string.msg_open_error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -259,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             List<NoteManager.ListItem> filtered = new ArrayList<>();
             String lowerQuery = query.toLowerCase();
-
             for (NoteManager.ListItem item : allNotes) {
                 if (item instanceof NoteManager.Note) {
                     NoteManager.Note note = (NoteManager.Note) item;
@@ -270,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
             }
             adapter.setItems(filtered);
         }
-        updateEmptyView(); // ต้องอัปเดต view ว่างด้วยถ้าค้นแล้วไม่เจอ
+        updateEmptyView();
     }
 
     private void updateEmptyView() {
@@ -280,30 +338,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showEditDeleteDialog(NoteManager.Note n) {
-        // [FIXED] ใช้ getString ทั้งหมด
         String pinAction = n.pinned ? getString(R.string.menu_unpin) : getString(R.string.menu_pin);
         String deleteAction = getString(R.string.btn_delete);
 
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.dialog_manage_title))
+                .setTitle(R.string.dialog_manage_title)
                 .setItems(new CharSequence[]{pinAction, deleteAction}, (dialog, which) -> {
-                    if (which == 0) { // Pin
+                    if (which == 0) {
                         boolean newPinState = !n.pinned;
                         manager.setPinned(n.id, newPinState);
                         refreshList();
-                        // [FIXED] Toast message
-                        String msg = newPinState ? getString(R.string.menu_pin) : getString(R.string.menu_unpin);
-                        // (ปรับ: อาจจะทำ string แยก msg_pinned/unpinned ก็ได้ แต่ใช้เมนูแก้ขัดไปก่อนก็เข้าใจได้)
+                        String msg = newPinState ? getString(R.string.msg_note_pinned) : getString(R.string.msg_note_unpinned);
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-
-                    } else if (which == 1) { // Delete
+                    } else if (which == 1) {
                         new AlertDialog.Builder(MainActivity.this)
-                                .setMessage(getString(R.string.dialog_confirm_delete))
-                                .setPositiveButton(getString(R.string.btn_delete), (d, w) -> {
+                                .setMessage(R.string.dialog_confirm_delete)
+                                .setPositiveButton(R.string.btn_delete, (d, w) -> {
                                     manager.deleteNote(n.id);
                                     refreshList();
                                 })
-                                .setNegativeButton(getString(R.string.btn_cancel), null)
+                                .setNegativeButton(R.string.btn_cancel, null)
                                 .show();
                     }
                 })

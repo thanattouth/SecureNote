@@ -1,6 +1,7 @@
 package com.example.securenote;
 
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 
 import java.security.KeyStore;
@@ -33,8 +34,7 @@ public class KeyStoreManager {
                         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                         .setKeySize(256) // ใช้ AES-256
                         .setUserAuthenticationRequired(true) // บังคับสแกนนิ้ว
-                        .setUserAuthenticationValidityDurationSeconds(15)
-                        // เพื่อให้ Cipher.init ทำงานได้โดยไม่ต้องสแกนนิ้วล่วงหน้า
+                        // .setUserAuthenticationValidityDurationSeconds(15)
                         .setInvalidatedByBiometricEnrollment(true) // ให้คีย์พังถ้านิ้วเปลี่ยน (ปลอดภัยสูง)
                         .build());
 
@@ -51,6 +51,10 @@ public class KeyStoreManager {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey());
             return cipher;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            // 🔥 จุดที่ 2: ไม่มีการ Reset ให้แล้ว!
+            // ปล่อยให้มัน Error ออกไปเลย หรือโยน Exception ให้แอปจัดการการ "ล้างบาง"
+            throw new RuntimeException("SECURITY BREACH: Biometric changed. Key destroyed.");
         } catch (Exception e) {
             e.printStackTrace();
             return null;

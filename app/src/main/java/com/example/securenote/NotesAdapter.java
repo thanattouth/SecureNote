@@ -66,7 +66,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             vh.tvTitle.setText(n.title);
 
-            String excerpt = n.content.length() > 120 ? n.content.substring(0,120) + "…" : n.content;
+            String excerpt = n.content.length() > 120 ? n.content.substring(0,120) + "â€¦" : n.content;
             vh.tvExcerpt.setText(excerpt);
 
             if (n.createdAt > 0) {
