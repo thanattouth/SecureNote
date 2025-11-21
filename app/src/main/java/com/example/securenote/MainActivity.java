@@ -37,9 +37,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText etSearch;
     private TextView tvEmpty;
 
-    // Constants for Internal Logic (ไม่ต้องแปล)
+    // Constants for Internal Logic
     private static final String SECURITY_BREACH_TAG = "SECURITY BREACH";
     private static final String PREFS_NAME = "notes_prefs";
+
+    // ✅ เพิ่มตัวแปรสถานะล็อค (Default = false ห้ามเข้า)
+    private boolean isUnlocked = false;
 
     private List<NoteManager.ListItem> allNotes = new ArrayList<>();
 
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 3. Init Hardware Key
-        // ถ้า KeyStore มีปัญหา (เช่น เครื่องไม่รองรับ) จะแจ้งเตือน User
         try {
             KeyStoreManager.generateSecretKey();
         } catch (Exception e) {
@@ -90,8 +92,11 @@ public class MainActivity extends AppCompatActivity {
         rvNotes = findViewById(R.id.rvNotes);
         btnAdd = findViewById(R.id.btnAdd);
         etSearch = findViewById(R.id.etSearch);
-        // tvEmpty = findViewById(R.id.tvEmpty); // เปิดใช้ถ้ามี View นี้ใน XML
 
+        // ถ้าใน Layout มี tvEmpty ให้เปิดบรรทัดนี้
+        // tvEmpty = findViewById(R.id.tvEmpty);
+
+        // ✅ ล็อคหน้าจอทันที ซ่อนทุกอย่างก่อน
         lockUI();
 
         rvNotes.setLayoutManager(new LinearLayoutManager(this));
@@ -122,73 +127,69 @@ public class MainActivity extends AppCompatActivity {
 
         btnAdd.setOnClickListener(v -> authenticateAndCreate());
 
+        // เรียกสแกนนิ้วทันทีที่เปิด
         performAppLock();
     }
 
-    // ✅ ฟังก์ชันชูโรง: Zero Trust Check (เช็คทุกครั้งที่กลับมาหน้า Main)
     @Override
     protected void onResume() {
         super.onResume();
 
-        // เช็คสถานะระเบิด
+        // ✅ Zero Trust Check: เช็คว่า Key ยังอยู่ดีไหม
         try {
-            // ลองเรียกใช้ Cipher ดู ถ้า Key พัง (เพราะนิ้วเปลี่ยน) มันจะโยน Exception
             Cipher cipher = KeyStoreManager.getEncryptCipher();
             if (cipher == null) {
-                // กรณีเป็น null อาจจะเกิดจาก KeyStore Error ทั่วไป หรือ Key Invalidated
-                // แต่ถ้าโค้ด KeyStoreManager ของคุณ throw RuntimeException ออกมา จะเข้า catch ข้างล่าง
+                // KeyStore error handling if needed
             }
-
         } catch (RuntimeException e) {
-            // จับข้อความ "SECURITY BREACH" ที่เราตั้งไว้ใน KeyStoreManager
             if (e.getMessage() != null && e.getMessage().contains(SECURITY_BREACH_TAG)) {
-                performSelfDestructSequence(); // 💥 เรียกฟังก์ชันทำลายล้าง
-                return; // จบการทำงาน ไม่ต้องโหลด List
+                performSelfDestructSequence();
+                return;
             }
         }
 
-        refreshList();
+        // ✅ CRITICAL FIX: ห้ามโหลดข้อมูลถ้ายังไม่ Unlocked
+        if (isUnlocked) {
+            refreshList();
+        }
     }
 
-    // 💥 ฟังก์ชันระเบิดแอพ (ลบข้อมูลเกลี้ยง)
+    // 💥 ฟังก์ชันระเบิดแอพ
     private void performSelfDestructSequence() {
-        // 1. ลบไฟล์ทั้งหมดใน Folder ของแอป
         File dir = getFilesDir();
         if (dir.isDirectory()) {
             String[] children = dir.list();
             if (children != null) {
-                for (String i : children) {
-                    new File(dir, i).delete();
-                }
+                for (String i : children) new File(dir, i).delete();
             }
         }
-
-        // 2. ลบ Database (SharedPreferences)
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().commit();
 
-        // 3. แจ้งเตือนครั้งสุดท้าย (ใช้ Resource String แล้ว!)
         new AlertDialog.Builder(this)
-                .setTitle(R.string.title_self_destruct) // ✅ แก้ไข: ไม่ Hardcode
-                .setMessage(R.string.msg_self_destruct)   // ✅ แก้ไข: ไม่ Hardcode
+                .setTitle(R.string.title_self_destruct)
+                .setMessage(R.string.msg_self_destruct)
                 .setCancelable(false)
-                .setPositiveButton(R.string.btn_bye, (d, w) -> { // ✅ แก้ไข: ไม่ Hardcode
-                    finishAffinity(); // ปิดแอป
-                    System.exit(0);   // ฆ่า Process
+                .setPositiveButton(R.string.btn_bye, (d, w) -> {
+                    finishAffinity();
+                    System.exit(0);
                 })
                 .show();
     }
 
     private void lockUI() {
+        // ซ่อนทุกอย่าง
         if (rvNotes != null) rvNotes.setVisibility(View.INVISIBLE);
         if (btnAdd != null) btnAdd.setVisibility(View.INVISIBLE);
         if (etSearch != null) etSearch.setVisibility(View.INVISIBLE);
+        if (tvEmpty != null) tvEmpty.setVisibility(View.INVISIBLE);
     }
 
     private void unlockUI() {
+        // เปิดแสดงผลเมื่อปลดล็อคแล้วเท่านั้น
         if (rvNotes != null) rvNotes.setVisibility(View.VISIBLE);
         if (btnAdd != null) btnAdd.setVisibility(View.VISIBLE);
         if (etSearch != null) etSearch.setVisibility(View.VISIBLE);
-        refreshList();
+        refreshList(); // โหลดข้อมูลเมื่อปลดล็อค
     }
 
     private void performAppLock() {
@@ -197,7 +198,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
             Toast.makeText(this, R.string.msg_bio_unavailable, Toast.LENGTH_SHORT).show();
-            unlockUI();
+            // กรณีไม่มีสแกนนิ้ว ต้องตัดสินใจว่าจะปิดแอป หรือยอมให้เข้า (แนะนำให้ปิดสำหรับ Secure Note)
+            finishAffinity();
             return;
         }
 
@@ -207,17 +209,19 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticationError(int errorCode, CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
-                        if (errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
-                                errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                            Toast.makeText(MainActivity.this, getString(R.string.msg_auth_error_prefix, errString), Toast.LENGTH_SHORT).show();
-                        }
+                        // ✅ ไม่ว่าจะ Error ด้วยเหตุผลอะไร (กด Back, กด Cancel, สแกนไม่ผ่านเกินจำนวน)
+                        // ต้องปิดแอปทันที ห้ามปล่อยให้หลุดไปหน้า Main
                         finishAffinity();
                     }
 
                     @Override
                     public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
+
+                        // ✅ ผ่านแล้วถึงเปลี่ยนสถานะเป็นจริง
+                        isUnlocked = true;
                         unlockUI();
+
                         Toast.makeText(MainActivity.this, R.string.msg_unlocked, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -244,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Legacy Logic (รองรับ Note แบบเก่า)
         try {
             String realContent = n.content;
             String imagePath = null;
@@ -303,6 +306,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshList() {
+        // ✅ ป้องกันการโหลดถ้ายังไม่ปลดล็อค (สำคัญมาก)
+        if (!isUnlocked) return;
+
         allNotes = manager.getAll();
         if (etSearch != null && etSearch.getText().length() > 0) {
             filterNotes(etSearch.getText().toString());
